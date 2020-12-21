@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+	<title>Speak Bot</title>
+	<style>
+		.title {
+			color: white;
+			text-align: center;
+			background-image: url('images/chatbot.jpeg');
+			background-repeat: no-repeat;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+			padding-top: 300px;
+			padding-bottom: 300px;
+			padding-left: 100px;
+			padding-right: 100px;
+			position: relative;
+			text-align: center;
+			color: white;
+		}
+		.letsSpeak {
+			background-color: white;	
+ 			color: #000080;
+			padding-top: 50px;
+			padding-bottom: 50px;
+			padding-left: 100px;
+			padding-right: 100px;
+		}
+		.knowledge {
+			background-color: #008cb3;
+			color: white;
+			padding-top: 50px;
+			padding-bottom: 50px;
+			padding-left: 100px;
+			padding-right: 100px;
+		}
+		a {
+			color: white;	
+		}
+		.btn-danger {
+			color: #fff;
+			background-color: rgba(255,255,255,.15);
+			border-color: #fcf8e3;
+		}
+		.btn-danger:hover {
+			color: #000080;
+			background-color: #fff;
+			border-color: #000080;
+		}
+		.btn-danger-speak {
+			color: #000080;
+			background-color: rgba(255,255,255,.15);
+			border-color: #000080;
+		}
+		.btn-danger-speak:hover {
+			color: #fff;
+			background-color: #008cb3;
+			border-color: #fff;
+		}
+		.bottom-left {
+			position: absolute;
+			top: 30%;
+			left: 5%;
+		}
+		.bottom {
+			position: absolute;
+			bottom: 25px;
+			left: 17%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="title" id="title">  
+		<div class="bottom-left"><h1>Chatbot المحادثة الآلية</h1><br/>
+		<h3>مرحبا بك, أنا الرد الآلي أسعد بمساعدتك <br/>Welcome, happy to help you<br/> <br/>
+		Contact me below to help you manage your appointments<br/>تواصل معي في الأسفل لإدارة مواعيدك</h3><br/>
+		</div>
+		<a id="icon" href="#letsSpeak"><i class="fa fa-angle-double-down bottom" style="font-size:48px"></i></a>
+		</div>
+		<div class="letsSpeak" id="letsSpeak">
+			<h2>تحدث معي Speak to me</h2>
+			<button type="button" class="btn btn-danger-speak" id="startRecord" onclick="createDownloadLink();" value="speakForm"> 
+				<i class="material-icons">record_voice_over</i></button>
+			<button type="button" class="btn btn-danger-speak" id="stopRecod"onclick="stopRecording();">
+				<i class="material-icons">stop</i></button>
+
+		</div>
+		<div class="knowledge">
+			<h2>دردش معي Chat with me</h2>
+			<input type="text" class="form-control" placeholder="تحدث معي هنا / Chat in here" id="userInput">
+			<br/>
+			<button type="button" class="btn btn-danger" id="chat" onclick="chatMe();" value="chatForm">أرسل / Send</button>
+			<br/>
+			<div class="response" id="botRespo"></div>
+		</div>
+ 	<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+	<script src="js/app.js"></script>
+	<script src="./js/jQuery1.js"></script>
+	<script>
+		var token = "12345";
+		window.onload = function() {
+			console.log('JavaScript');
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function(response) {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log('JavaScript AJAX');
+				var authToken = JSON.parse(response.currentTarget.response);
+				token = authToken.payload.token;
+				console.log(this.token);
+				}
+			};
+			xhttp.open("POST", "http://cloud.votek.me/api/v1.1/me/login",true);
+			xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhttp.send("email=TCSTeam5&password=EtCeBJ6t");
+			//xhttp.send("email=TCSTeam25&password=7zG7NatN");
+			//"TCSTeam5", "EtCeBJ6t" --- JSON.stringify({userName:"TCSTeam5",pwd:"EtCeBJ6t"})
+			//JSON.stringify({userName:"TCSTeam5",pwd:"EtCeBJ6t"})
+			//curl -X POST "http://cloud.votek.me/api/v1.1/me/login" -H "accept: application/json" -H "Content-Type: application/x-www-form-urlencoded" -d "email=TCSTeam5&password=EtCeBJ6t"
+		};
+		function speakMe() {
+			console.log('Hiiii SpeakMe');
+			
+		}
+		function votek(){
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function(response) {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log('JavaScript AJAX');
+				}
+			};
+			xhttp.open("POST", "http://cloud.votek.me/api/v1.1/asr/transcribe",true);
+			xhttp.setRequestHeader("authorization","Bearer " + token);
+			xhttp.setRequestHeader("accept","application/json");
+			xhttp.setRequestHeader("Content-Type", "multipart/form-data");
+			xhttp.setRequestHeader("audio","C:/Users/1370245/Documents/My Received Files/recording.wav");
+			xhttp.setRequestHeader("lang","en");
+			xhttp.send();
+		}
+		function chatMe(){
+			console.log('Hiiii ChatMe');
+		}
+function createDownloadLink() {
+	var data_audio = new FormData();
+/* 	data_audio.append('audio',blob);
+ var lang = "ar";
+	if(that.selectedLangIsEnglish){
+		lang = "en";
+	}	
+	data_audio.append('lang', lang);*/
+	if(token){
+		var settings  = {
+			"async":true,
+			"url": "http://cloud.votek.me/api/v1.1/asr/transcribe",
+			"method":"POST",
+			"headers": {
+				"authorization": "Bearer "+ token
+			},
+			"processData":false,
+			"contentType":false,
+			"mimeType":"multipart/form-data",
+			"data":"C:/Users/1370245/Documents/My Received Files/recording.wav"
+		}
+		//console.log(settings);
+		$.ajax(settings).done(function(response) {
+	        console.log(response);
+	        var obj = JSON.parse(response);
+	        /*console.log(obj);
+	        for (var key in JSON.parse(response)){
+	        	console.log('key is ', key);
+	        	var val = response.key;
+	        	console.log('value is ', val);
+	        }
+	        console.log('Obj payload is ',obj.payload);*/
+	        //$("#transcribedText").val(obj["payload"]["transcript"]);		
+	        console.log(obj["payload"]["transcript"]);
+	        $('#query').val(obj["payload"]["transcript"]);
+	    });
+	}}
+	function stopRecording() {
+    console.log("stopButton clicked");
+    //disable the stop button, enable the record too allow for new recordings 
+    stopButton.disabled = true;
+    recordButton.disabled = false;
+    pauseButton.disabled = true;
+    //reset button just in case the recording is stopped while paused 
+    pauseButton.innerHTML = "Pause";
+    //tell the recorder to stop the recording 
+    rec.stop(); //stop microphone access 
+    gumStream.getAudioTracks()[0].stop();
+    //create the wav blob and pass it on to createDownloadLink 
+    rec.exportWAV(createDownloadLink);
+}
+	</script>
+</body>
+</html>
